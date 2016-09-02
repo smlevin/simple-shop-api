@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context" default-lazy-init="true"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="shopOperationService" class="ru.checkout.shop.api.service.impl.ShopOperationServiceImpl"/>
+	<bean id="orderDao" class="ru.checkout.shop.api.dao.impl.OrderDaoImpl"/>
+	<bean id="userDao" class="ru.checkout.shop.api.dao.impl.UserDaoImpl"/>
+	<bean id="productDao" class="ru.checkout.shop.api.dao.impl.ProductDaoImpl"/>
+
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false" mode="proxy"/>
+
+	<context:property-placeholder/>
+	<context:annotation-config/>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml"/>
+	</bean>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${db.driver:com.mysql.jdbc.Driver}"/>
+		<property name="jdbcUrl" value="${db.jdbcurl:jdbc:mysql://127.0.0.1/checkout_shop?useUnicode=true&amp;characterEncoding=UTF-8&amp;characterSetResults=UTF-8&amp;autoReconnect=true}"/>
+		<property name="user" value="${db.username:checkout}"/>
+		<property name="password" value="${db.password:checkout}"/>
+		<property name="minPoolSize" value="${db.min.pool.size:5}"/>
+		<property name="maxPoolSize" value="${db.max.pool.size:50}"/>
+		<property name="preferredTestQuery" value="select 1"/>
+		<property name="testConnectionOnCheckout" value="true"/>
+	</bean>
+</beans>
